@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- stylesheets -->
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <link rel="stylesheet" href="/stylesheets/table.css" />
+  <link rel="stylesheet" href="/stylesheets/modal.css" />
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- Modal -->
+  <!-- Add new User Button -->
+  <button id="createUserButton" class="button" onclick="renderCreateProduct()">
+    Add New Product
+  </button>
+
+  <button id="deleteUsersButton" class="button" onclick="deleteAllUsers()">
+    Delete All Product
+  </button>
+
+  <!-- The Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <header class="modal-header">
+        <span class="close">&times;</span>
+        <h2>DEFAULT</h2>
+      </header>
+
+      <!-- Modal Body -->
+      <main class="modal-body">
+        <input type="text" placeholder="firstname" class="updateInputs" />
+      </main>
+
+      <!-- Modal Footer -->
+      <footer class="modal-footer"></footer>
+    </div>
+  </div>
+
+  <!-- Users Data Table -->
+  <table>
+    <thead></thead>
+
+    <tbody></tbody>
+  </table>
+
+  <!-- scripts -->
+  <script src='/javascripts/assets.js'></script>
+  <script src="/javascripts/modal.js"></script>
+  <script src="/javascripts/main.js"></script>
+</body>
+
+</html>
