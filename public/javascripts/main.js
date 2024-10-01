@@ -2,8 +2,8 @@ renderTable();
 
 // Rendering Functions
 async function renderTable() {
-  const response = await fetch('http://localhost:3001/users-data')
-  const users = await response.json()
+  const response = await fetch('http://localhost:8001/product-get-all-products')
+  const products = await response.json()
 
   thead.innerHTML = "";
   tbody.innerHTML = "";
@@ -36,7 +36,9 @@ async function renderTable() {
 }
 
 async function renderReadProduct(id) {
-  //  const user = await findUser(id);
+  const response = await fetch('http://localhost:8001/product-get-all-products')
+  const products = await response.json()
+
   const product = products.find((product) => product.id === id);
 
   modalHeader.textContent = "Product Info";
@@ -75,8 +77,8 @@ function renderCreateProduct() {
 }
 
 async function renderUpdateProduct(id) {
-  // const response = await fetch("http://localhost:3001/users-data");
-  // const products = await response.json();
+  const response = await fetch('http://localhost:8001/product-get-all-products')
+  const products = await response.json()
 
   const product = products.find((product) => product.id === id);
 
@@ -98,6 +100,7 @@ async function renderUpdateProduct(id) {
 
 // // Operational Functions
 async function createProduct() {
+
   const createInputs = document.querySelectorAll(".create-inputs");
 
   for (const input of createInputs) {
