@@ -4,18 +4,21 @@ const {
 } = require("fs/promises");
 const {
   join
-} = require('path');
+} = require("path");
 const productDBS = require("./products-data.json");
 
 const app = express();
 const host = "127.0.0.1";
 const port = 8001;
 
-app.use(express.static(join(__dirname, "./public")))
+app.use(express.static(join(__dirname, "./public")));
+app.use(express.json());
 
-app.use(express.urlencoded({
-  extended: true
-}))
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.get("/product-get-all-products", (request, response) => {
   response.status(200).json(productDBS);
@@ -53,12 +56,16 @@ app.get("/product/get-product/:id", (request, response) => {
 });
 
 app.post("/product/create-product", (request, response) => {
-  const newProduct = request.body;
+  let getProduct = request.body.data;
+  const newProduct = {};
 
-  const repeatedProduct = productDBS.find(
+  for (const property of getProduct) {
+    newProduct[property.id] = property.value;
+  }
+  const isProductExistINDB = productDBS.find(
     (product) => product.id === newProduct.id
   );
-  if (repeatedProduct) {
+  if (isProductExistINDB) {
     return response.json({
       status: "fail",
       error: {
@@ -68,38 +75,56 @@ app.post("/product/create-product", (request, response) => {
   }
 
   productDBS.push(JSON.parse(newProduct));
-  writeFile(join(__dirname, "./products-data.json"), json.stringify(productDBS))
-
+  writeFile(
+    join(__dirname, "./products-data.json"),
+    json.stringify(productDBS)
+  );
 });
 
-app.put("/product/update-product/:id", (request, response) => {
-  const {
-    id
-  } = request.params;
-  const updatedProduct = request.body;
+app.put("/product/update-product/:id", async (request, response) => {
+  try {
+    const {
+      id
+    } = request.params;
+    const updatedProduct = request.body.data;
 
-  const repeatedProduct = productDBS.find(
-    (product) => product.id === Number(id)
-  );
+    const newInfo = {};
+    for (const property of updatedProduct) {
+      newInfo[property.id] = property.value;
+    }
+    console.log(newInfo);
 
-  if (!repeatedProduct) {
-    return response.status(404).json({
-      status: "fail",
+    const indexOfProduct = productDBS.findIndex(
+      (product) => product.id === Number(id)
+    );
+    if (indexOfProduct === -1) {
+      return response.status(404).json({
+        status: "fail",
+        error: {
+          message: `id${id} is not exist in dbs`,
+        },
+      });
+    }
+    productDBS.splice(indexOfProduct, 1, newInfo);
+    await writeFile(
+      join(__dirname, "./products-data.json"),
+      JSON.stringify(productDBS)
+    );
+
+    response.status(200).json({
+      status: "ok",
+      data: {
+        newInfo,
+      },
+    });
+  } catch (err) {
+    response.status(500).json({
+      status: "error",
       error: {
-        message: `id${newProduct.id} isn not exist in dbs`,
+        message: `server error`,
       },
     });
   }
-
-  productDBS.toSpliced(indexOfProduct, 1, updatedProduct)
-  writeFile(join(__dirname, "./products-data.json"), json.stringify(productDBS))
-
-  response.status(200).json({
-    status: "ok",
-    data: {
-      repeatedProduct
-    },
-  });
 });
 
 app.delete("/product/remove-product/id", (request, response) => {
@@ -118,17 +143,19 @@ app.delete("/product/remove-product/id", (request, response) => {
       },
     });
   }
-  productDBS.toSpliced(indexOfProduct, 1)
-  writeFile(join(__dirname, "./products-data.json"), json.stringify(productDBS))
+  productDBS.toSpliced(indexOfProduct, 1);
+  writeFile(
+    join(__dirname, "./products-data.json"),
+    JSON.stringify(productDBS)
+  );
 
   response.status(200).json({
     status: "ok",
     data: {
-      deletedProduct
+      deletedProduct,
     },
   });
-
-})
+});
 
 app.all("*", (request, response) => {
   response.status(404).json({
@@ -136,8 +163,8 @@ app.all("*", (request, response) => {
     error: {
       message: `not-found`,
     },
-  })
-})
+  });
+});
 app.listen(port, host, () => {
   `you are listening on ${host}:${port}`;
 });

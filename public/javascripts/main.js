@@ -2,8 +2,10 @@ renderTable();
 
 // Rendering Functions
 async function renderTable() {
-  const response = await fetch('http://localhost:8001/product-get-all-products')
-  const products = await response.json()
+  const response = await fetch(
+    "http://localhost:8001/product-get-all-products"
+  );
+  const products = await response.json();
 
   thead.innerHTML = "";
   tbody.innerHTML = "";
@@ -36,8 +38,10 @@ async function renderTable() {
 }
 
 async function renderReadProduct(id) {
-  const response = await fetch('http://localhost:8001/product-get-all-products')
-  const products = await response.json()
+  const response = await fetch(
+    "http://localhost:8001/product-get-all-products"
+  );
+  const products = await response.json();
 
   const product = products.find((product) => product.id === id);
 
@@ -77,8 +81,10 @@ function renderCreateProduct() {
 }
 
 async function renderUpdateProduct(id) {
-  const response = await fetch('http://localhost:8001/product-get-all-products')
-  const products = await response.json()
+  const response = await fetch(
+    "http://localhost:8001/product-get-all-products"
+  );
+  const products = await response.json();
 
   const product = products.find((product) => product.id === id);
 
@@ -100,7 +106,6 @@ async function renderUpdateProduct(id) {
 
 // // Operational Functions
 async function createProduct() {
-
   const createInputs = document.querySelectorAll(".create-inputs");
 
   for (const input of createInputs) {
@@ -113,22 +118,16 @@ async function createProduct() {
   }));
   console.log(data);
 
-  // await fetch("http://localhost:3001/table", {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     action: "create",
-  //     uid: uid,
-  //     data: data,
-  //   }),
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // });
-  const newProduct = {};
-  for (const property of data) {
-    newProduct[property.id] = property.value;
-  }
-  products.push(newProduct);
+  await fetch("http://localhost:8001/product/create-product", {
+    method: "POST",
+    body: JSON.stringify({
+      data: data
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
 
   closeModal();
   renderTable();
@@ -146,35 +145,26 @@ async function updateProduct(id) {
     value: input.value,
   }));
 
-  // await fetch("http://localhost:3001/table", {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     action: "update",
-  //     uid: uid,
-  //     data: data,
-  //   }),
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // });
-  console.log(data);
-  const newInfo = {};
-  for (const property of data) {
-    newInfo[property.id] = property.value;
-  }
-  const indexOfProduct = products.indexOf((product) => product.id === id);
-  products.toSpliced(indexOfProduct, 1, newInfo);
+  await fetch(`http://localhost:8001/product/update-product/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      data: data
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   closeModal();
   renderTable();
 }
 
-async function deleteUser(uid) {
+async function deleteUser(id) {
   await fetch("http://localhost:3001/table", {
     method: "POST",
     body: JSON.stringify({
       action: "delete",
-      uid: uid,
+      id: id,
     }),
     headers: {
       "Content-Type": "application/json",
